@@ -4,6 +4,12 @@
 // https://boringssl.googlesource.com/boringssl/+/master/ssl/test
 //
 
+use std::io::{self, BufReader, Read, Write};
+use std::sync::Arc;
+use std::{env, fs, net, process, thread, time};
+
+use base64::prelude::{Engine, BASE64_STANDARD};
+use pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
 use rustls::client::danger::HandshakeSignatureValid;
 use rustls::client::{ClientConfig, ClientConnection, Resumption, WebPkiServerVerifier};
 use rustls::crypto::ring::{kx_group, Ticketer, ALL_KX_GROUPS};
@@ -17,14 +23,6 @@ use rustls::{
     PeerMisbehaved, ProtocolVersion, ServerName, Side, SignatureAlgorithm, SignatureScheme,
     SupportedProtocolVersion,
 };
-
-use base64::prelude::{Engine, BASE64_STANDARD};
-use pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
-
-use std::io::{self, BufReader, Read, Write};
-use std::sync::Arc;
-use std::time;
-use std::{env, fs, net, process, thread};
 
 static BOGO_NACK: i32 = 89;
 

@@ -1,5 +1,4 @@
-use crate::enums::ContentType;
-use crate::enums::ProtocolVersion;
+use crate::enums::{ContentType, ProtocolVersion};
 use crate::msgs::message::{BorrowedPlainMessage, PlainMessage};
 use crate::Error;
 pub(crate) const MAX_FRAGMENT_LEN: usize = 16384;
@@ -68,8 +67,7 @@ impl MessageFragmenter {
 #[cfg(test)]
 mod tests {
     use super::{MessageFragmenter, PACKET_OVERHEAD};
-    use crate::enums::ContentType;
-    use crate::enums::ProtocolVersion;
+    use crate::enums::{ContentType, ProtocolVersion};
     use crate::msgs::base::Payload;
     use crate::msgs::message::{BorrowedPlainMessage, PlainMessage};
 

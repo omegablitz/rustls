@@ -446,13 +446,14 @@ pub mod client {
     mod tls12;
     mod tls13;
 
-    pub use crate::dns_name::InvalidDnsNameError;
     pub use builder::WantsClientCert;
     pub use client_conn::{
         ClientConfig, ClientConnection, ClientConnectionData, ClientSessionStore,
         ResolvesClientCert, Resumption, ServerName, Tls12Resumption, WriteEarlyData,
     };
     pub use handy::ClientSessionMemoryCache;
+
+    pub use crate::dns_name::InvalidDnsNameError;
 
     /// Dangerous configuration that should be audited and used with extreme care.
     pub mod danger {
@@ -461,13 +462,11 @@ pub mod client {
         pub use crate::verify::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
     }
 
+    pub use crate::msgs::persist::{Tls12ClientSessionValue, Tls13ClientSessionValue};
     pub use crate::webpki::{
         verify_server_cert_signed_by_trust_anchor, verify_server_name, ServerCertVerifierBuilder,
         VerifierBuilderError, WebPkiServerVerifier,
     };
-
-    pub use crate::msgs::persist::Tls12ClientSessionValue;
-    pub use crate::msgs::persist::Tls13ClientSessionValue;
 }
 
 pub use client::{ClientConfig, ClientConnection, ServerName};
@@ -483,17 +482,17 @@ pub mod server {
     mod tls12;
     mod tls13;
 
-    pub use crate::verify::NoClientAuth;
-    pub use crate::webpki::WebPkiClientVerifier;
-    pub use crate::webpki::{ClientCertVerifierBuilder, VerifierBuilderError};
     pub use builder::WantsServerCert;
-    pub use handy::ResolvesServerCertUsingSni;
-    pub use handy::{NoServerSessionStorage, ServerSessionMemoryCache};
-    pub use server_conn::StoresServerSessions;
+    pub use handy::{NoServerSessionStorage, ResolvesServerCertUsingSni, ServerSessionMemoryCache};
     pub use server_conn::{
-        Accepted, Acceptor, ReadEarlyData, ServerConfig, ServerConnection, ServerConnectionData,
+        Accepted, Acceptor, ClientHello, ProducesTickets, ReadEarlyData, ResolvesServerCert,
+        ServerConfig, ServerConnection, ServerConnectionData, StoresServerSessions,
     };
-    pub use server_conn::{ClientHello, ProducesTickets, ResolvesServerCert};
+
+    pub use crate::verify::NoClientAuth;
+    pub use crate::webpki::{
+        ClientCertVerifierBuilder, VerifierBuilderError, WebPkiClientVerifier,
+    };
 
     /// Dangerous configuration that should be audited and used with extreme care.
     pub mod danger {

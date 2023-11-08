@@ -1,3 +1,11 @@
+use alloc::vec::Vec;
+use core::cmp;
+#[cfg(feature = "tls12")]
+use core::mem;
+
+use pki_types::{CertificateDer, UnixTime};
+use zeroize::Zeroizing;
+
 use crate::dns_name::DnsName;
 use crate::enums::{CipherSuite, ProtocolVersion};
 use crate::error::InvalidMessage;
@@ -9,14 +17,6 @@ use crate::msgs::handshake::SessionId;
 #[cfg(feature = "tls12")]
 use crate::tls12::Tls12CipherSuite;
 use crate::tls13::Tls13CipherSuite;
-
-use pki_types::{CertificateDer, UnixTime};
-use zeroize::Zeroizing;
-
-use alloc::vec::Vec;
-use core::cmp;
-#[cfg(feature = "tls12")]
-use core::mem;
 
 pub(crate) struct Retrieved<T> {
     pub(crate) value: T,

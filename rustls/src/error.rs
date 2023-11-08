@@ -1,7 +1,3 @@
-use crate::enums::{AlertDescription, ContentType, HandshakeType};
-use crate::msgs::handshake::KeyExchangeAlgorithm;
-use crate::rand;
-
 use alloc::format;
 use alloc::string::String;
 use alloc::sync::Arc;
@@ -9,6 +5,10 @@ use alloc::vec::Vec;
 use core::fmt;
 use std::error::Error as StdError;
 use std::time::SystemTimeError;
+
+use crate::enums::{AlertDescription, ContentType, HandshakeType};
+use crate::msgs::handshake::KeyExchangeAlgorithm;
+use crate::rand;
 
 /// rustls reports protocol errors using this type.
 #[non_exhaustive]

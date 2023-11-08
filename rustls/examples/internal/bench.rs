@@ -3,23 +3,20 @@
 // Note: we don't use any of the standard 'cargo bench', 'test::Bencher',
 // etc. because it's unstable at the time of writing.
 
-use std::env;
-use std::fs;
 use std::io::{self, Read, Write};
-use std::ops::Deref;
-use std::ops::DerefMut;
+use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use std::{env, fs};
 
 use pki_types::{CertificateDer, PrivateKeyDer};
-
 use rustls::client::Resumption;
 use rustls::crypto::ring::Ticketer;
 use rustls::server::{NoServerSessionStorage, ServerSessionMemoryCache, WebPkiClientVerifier};
-use rustls::RootCertStore;
-use rustls::{ClientConfig, ClientConnection};
-use rustls::{ConnectionCommon, SideData};
-use rustls::{ServerConfig, ServerConnection};
+use rustls::{
+    ClientConfig, ClientConnection, ConnectionCommon, RootCertStore, ServerConfig,
+    ServerConnection, SideData,
+};
 
 fn duration_nanos(d: Duration) -> f64 {
     (d.as_secs() as f64) + f64::from(d.subsec_nanos()) / 1e9

@@ -1,8 +1,7 @@
-use super::hmac;
-use super::ActiveKeyExchange;
-use crate::error::Error;
-
 use alloc::boxed::Box;
+
+use super::{hmac, ActiveKeyExchange};
+use crate::error::Error;
 
 /// Implements [`Prf`] using a [`hmac::Hmac`].
 pub struct PrfUsingHmac<'a>(pub &'a dyn hmac::Hmac);

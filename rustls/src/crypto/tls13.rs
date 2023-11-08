@@ -1,9 +1,9 @@
-use super::hmac;
-use super::ActiveKeyExchange;
-use crate::error::Error;
-
 use alloc::boxed::Box;
+
 use zeroize::Zeroize;
+
+use super::{hmac, ActiveKeyExchange};
+use crate::error::Error;
 
 /// Implementation of `HkdfExpander` via `hmac::Key`.
 pub struct HkdfExpanderUsingHmac(Box<dyn hmac::Key>);

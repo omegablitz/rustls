@@ -1,12 +1,12 @@
-use crate::error::Error;
-use crate::rand::GetRandomFailed;
-use crate::server::ProducesTickets;
-
-use ring::aead;
-
 use alloc::boxed::Box;
 use alloc::sync::Arc;
 use alloc::vec::Vec;
+
+use ring::aead;
+
+use crate::error::Error;
+use crate::rand::GetRandomFailed;
+use crate::server::ProducesTickets;
 
 /// A concrete, safe ticket creation mechanism.
 pub struct Ticketer {}
@@ -103,10 +103,11 @@ impl ProducesTickets for AeadTicketer {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     use core::time::Duration;
+
     use pki_types::UnixTime;
+
+    use super::*;
 
     #[test]
     fn basic_pairwise_test() {

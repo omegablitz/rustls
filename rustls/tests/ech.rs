@@ -1,5 +1,4 @@
 use base64::prelude::{Engine, BASE64_STANDARD};
-
 use rustls::internal::msgs::codec::{Codec, Reader};
 use rustls::internal::msgs::enums::{EchVersion, HpkeAead, HpkeKdf, HpkeKem};
 use rustls::internal::msgs::handshake::{EchConfig, HpkeKeyConfig, HpkeSymmetricCipherSuite};

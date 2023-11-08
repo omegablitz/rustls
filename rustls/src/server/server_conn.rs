@@ -1,3 +1,12 @@
+use alloc::boxed::Box;
+use alloc::sync::Arc;
+use alloc::vec::Vec;
+use core::fmt;
+use core::marker::PhantomData;
+use core::ops::{Deref, DerefMut};
+use std::io;
+
+use super::hs;
 use crate::builder::{ConfigBuilder, WantsCipherSuites};
 use crate::common_state::{CommonState, Context, Side, State};
 use crate::conn::{ConnectionCommon, ConnectionCore};
@@ -10,21 +19,9 @@ use crate::log::trace;
 use crate::msgs::base::Payload;
 use crate::msgs::handshake::{ClientHelloPayload, ProtocolName, ServerExtension};
 use crate::msgs::message::Message;
-use crate::sign;
 use crate::suites::{ExtractedSecrets, SupportedCipherSuite};
 use crate::vecbuf::ChunkVecBuffer;
-use crate::verify;
-use crate::KeyLog;
-
-use super::hs;
-
-use alloc::boxed::Box;
-use alloc::sync::Arc;
-use alloc::vec::Vec;
-use core::fmt;
-use core::marker::PhantomData;
-use core::ops::{Deref, DerefMut};
-use std::io;
+use crate::{sign, verify, KeyLog};
 
 /// A trait for the ability to store server session data.
 ///

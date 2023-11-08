@@ -1,11 +1,11 @@
-#[cfg(feature = "logging")]
-use crate::log::trace;
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 
 use pki_types::{CertificateDer, CertificateRevocationListDer, UnixTime};
 use webpki::{CertRevocationList, RevocationCheckDepth, UnknownStatusPolicy};
 
+#[cfg(feature = "logging")]
+use crate::log::trace;
 use crate::verify::{
     DigitallySignedStruct, HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier,
 };

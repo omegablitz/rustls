@@ -1,18 +1,12 @@
-use std::env;
-use std::net;
-
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process;
-use std::str;
-use std::thread;
-use std::time;
+use std::{env, net, process, str, thread, time};
+
+use regex;
+use ring::rand::SecureRandom;
 
 use self::regex::Regex;
-use regex;
-
-use ring::rand::SecureRandom;
 
 pub struct DeleteFilesOnDrop {
     path: PathBuf,

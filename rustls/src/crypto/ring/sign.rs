@@ -1,13 +1,3 @@
-use crate::enums::{SignatureAlgorithm, SignatureScheme};
-use crate::error::Error;
-use crate::sign::{Signer, SigningKey};
-use crate::x509::{asn1_wrap, wrap_in_sequence};
-
-use pki_types::{PrivateKeyDer, PrivatePkcs8KeyDer};
-use ring::io::der;
-use ring::rand::{SecureRandom, SystemRandom};
-use ring::signature::{self, EcdsaKeyPair, Ed25519KeyPair, RsaKeyPair};
-
 use alloc::boxed::Box;
 use alloc::string::ToString;
 use alloc::sync::Arc;
@@ -15,6 +5,16 @@ use alloc::vec;
 use alloc::vec::Vec;
 use core::fmt;
 use std::error::Error as StdError;
+
+use pki_types::{PrivateKeyDer, PrivatePkcs8KeyDer};
+use ring::io::der;
+use ring::rand::{SecureRandom, SystemRandom};
+use ring::signature::{self, EcdsaKeyPair, Ed25519KeyPair, RsaKeyPair};
+
+use crate::enums::{SignatureAlgorithm, SignatureScheme};
+use crate::error::Error;
+use crate::sign::{Signer, SigningKey};
+use crate::x509::{asn1_wrap, wrap_in_sequence};
 
 /// Parse `der` as any supported key encoding/type, returning
 /// the first which works.
@@ -354,8 +354,9 @@ impl StdError for SignError {}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pki_types::{PrivatePkcs1KeyDer, PrivateSec1KeyDer};
+
+    use super::*;
 
     #[test]
     fn can_load_ecdsa_nistp256_pkcs8() {

@@ -6,17 +6,15 @@ use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 
 use pki_types::{CertificateDer, CertificateRevocationListDer, PrivateKeyDer};
-use webpki::extract_trust_anchor;
-
 use rustls::client::ServerCertVerifierBuilder;
 use rustls::internal::msgs::codec::Reader;
 use rustls::internal::msgs::message::{Message, OpaqueMessage, PlainMessage};
 use rustls::server::{ClientCertVerifierBuilder, WebPkiClientVerifier};
-use rustls::Connection;
-use rustls::Error;
-use rustls::RootCertStore;
-use rustls::{ClientConfig, ClientConnection};
-use rustls::{ConnectionCommon, ServerConfig, ServerConnection, SideData};
+use rustls::{
+    ClientConfig, ClientConnection, Connection, ConnectionCommon, Error, RootCertStore,
+    ServerConfig, ServerConnection, SideData,
+};
+use webpki::extract_trust_anchor;
 
 macro_rules! embed_files {
     (

@@ -449,12 +449,12 @@ const READ_SIZE: usize = 4096;
 
 #[cfg(test)]
 mod tests {
+    use std::io;
+
     use super::MessageDeframer;
     use crate::msgs::message::{Message, OpaqueMessage};
     use crate::record_layer::RecordLayer;
     use crate::{ContentType, Error, InvalidMessage};
-
-    use std::io;
 
     const FIRST_MESSAGE: &[u8] = include_bytes!("../testdata/deframer-test.1.bin");
     const SECOND_MESSAGE: &[u8] = include_bytes!("../testdata/deframer-test.2.bin");

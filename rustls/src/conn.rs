@@ -1,3 +1,9 @@
+use alloc::boxed::Box;
+use core::fmt::Debug;
+use core::mem;
+use core::ops::{Deref, DerefMut};
+use std::io;
+
 use crate::common_state::{CommonState, Context, IoState, State};
 use crate::enums::{AlertDescription, ContentType};
 use crate::error::{Error, PeerMisbehaved};
@@ -8,12 +14,6 @@ use crate::msgs::handshake::Random;
 use crate::msgs::message::{Message, MessagePayload, PlainMessage};
 use crate::suites::{ExtractedSecrets, PartiallyExtractedSecrets};
 use crate::vecbuf::ChunkVecBuffer;
-
-use alloc::boxed::Box;
-use core::fmt::Debug;
-use core::mem;
-use core::ops::{Deref, DerefMut};
-use std::io;
 
 /// A client or server connection.
 #[derive(Debug)]

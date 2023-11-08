@@ -3,18 +3,17 @@
 #![cfg(any(feature = "ring", feature = "aws_lc_rs"))]
 
 mod common;
+use std::sync::Arc;
+
+use pki_types::{CertificateDer, UnixTime};
+use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
+use rustls::client::WebPkiServerVerifier;
+use rustls::{AlertDescription, DigitallySignedStruct, Error, InvalidMessage, SignatureScheme};
+
 use crate::common::{
     do_handshake, do_handshake_until_both_error, make_client_config_with_versions,
     make_pair_for_arc_configs, make_server_config, ErrorFromPeer, ALL_KEY_TYPES,
 };
-use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier};
-use rustls::client::WebPkiServerVerifier;
-use rustls::DigitallySignedStruct;
-use rustls::{AlertDescription, Error, InvalidMessage, SignatureScheme};
-
-use pki_types::{CertificateDer, UnixTime};
-
-use std::sync::Arc;
 
 #[test]
 fn client_can_override_certificate_verification() {

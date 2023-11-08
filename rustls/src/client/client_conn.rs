@@ -1,3 +1,13 @@
+use alloc::sync::Arc;
+use alloc::vec::Vec;
+use core::marker::PhantomData;
+use core::ops::{Deref, DerefMut};
+use core::{fmt, mem};
+use std::io;
+use std::net::IpAddr;
+
+use super::handy::{ClientSessionMemoryCache, NoClientSessionStorage};
+use super::hs;
 use crate::builder::{ConfigBuilder, WantsCipherSuites};
 use crate::common_state::{CommonState, Protocol, Side};
 use crate::conn::{ConnectionCommon, ConnectionCore};
@@ -10,23 +20,8 @@ use crate::log::trace;
 use crate::msgs::enums::NamedGroup;
 use crate::msgs::handshake::ClientExtension;
 use crate::msgs::persist;
-use crate::sign;
 use crate::suites::{ExtractedSecrets, SupportedCipherSuite};
-use crate::verify;
-use crate::versions;
-use crate::KeyLog;
-
-use super::handy::{ClientSessionMemoryCache, NoClientSessionStorage};
-use super::hs;
-
-use alloc::sync::Arc;
-use alloc::vec::Vec;
-use core::fmt;
-use core::marker::PhantomData;
-use core::mem;
-use core::ops::{Deref, DerefMut};
-use std::io;
-use std::net::IpAddr;
+use crate::{sign, verify, versions, KeyLog};
 
 /// A trait for the ability to store client session data, so that sessions
 /// can be resumed in future connections.

@@ -2,13 +2,11 @@
 #![cfg_attr(read_buf, feature(read_buf))]
 //! Assorted public API tests.
 use std::cell::RefCell;
-use std::fmt;
 use std::io::{self, IoSlice, Read, Write};
-use std::mem;
 use std::ops::{Deref, DerefMut};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use std::{fmt, mem};
 
 use pki_types::{CertificateDer, UnixTime};
 use rustls::client::{
@@ -21,16 +19,12 @@ use rustls::internal::msgs::enums::AlertLevel;
 use rustls::internal::msgs::handshake::{ClientExtension, HandshakePayload};
 use rustls::internal::msgs::message::{Message, MessagePayload, PlainMessage};
 use rustls::server::{ClientHello, ParsedCertificate, ResolvesServerCert, WebPkiClientVerifier};
-use rustls::SupportedCipherSuite;
 use rustls::{
-    sign, AlertDescription, CertificateError, ConnectionCommon, ContentType, Error, KeyLog,
-    PeerIncompatible, PeerMisbehaved, SideData,
+    sign, AlertDescription, CertificateError, CipherSuite, ClientConfig, ClientConnection,
+    ConnectionCommon, ConnectionTrafficSecrets, ContentType, DistinguishedName, Error, KeyLog,
+    PeerIncompatible, PeerMisbehaved, ProtocolVersion, ServerConfig, ServerConnection, SideData,
+    SignatureScheme, Stream, StreamOwned, SupportedCipherSuite,
 };
-use rustls::{CipherSuite, ProtocolVersion, SignatureScheme};
-use rustls::{ClientConfig, ClientConnection};
-use rustls::{ConnectionTrafficSecrets, DistinguishedName};
-use rustls::{ServerConfig, ServerConnection};
-use rustls::{Stream, StreamOwned};
 
 mod common;
 use crate::common::*;
@@ -199,7 +193,8 @@ fn check_read_err(reader: &mut dyn io::Read, err_kind: io::ErrorKind) {
 
 #[cfg(read_buf)]
 fn check_read_buf(reader: &mut dyn io::Read, bytes: &[u8]) {
-    use std::{io::BorrowedBuf, mem::MaybeUninit};
+    use std::io::BorrowedBuf;
+    use std::mem::MaybeUninit;
 
     let mut buf = [MaybeUninit::<u8>::uninit(); 128];
     let mut buf: BorrowedBuf<'_> = buf.as_mut_slice().into();
@@ -209,7 +204,8 @@ fn check_read_buf(reader: &mut dyn io::Read, bytes: &[u8]) {
 
 #[cfg(read_buf)]
 fn check_read_buf_err(reader: &mut dyn io::Read, err_kind: io::ErrorKind) {
-    use std::{io::BorrowedBuf, mem::MaybeUninit};
+    use std::io::BorrowedBuf;
+    use std::mem::MaybeUninit;
 
     let mut buf = [MaybeUninit::<u8>::uninit(); 1];
     let mut buf: BorrowedBuf<'_> = buf.as_mut_slice().into();
@@ -3708,8 +3704,9 @@ fn early_data_can_be_rejected_by_server() {
 
 #[cfg(feature = "quic")]
 mod test_quic {
-    use super::*;
     use rustls::quic::{self, ConnectionCommon};
+
+    use super::*;
 
     // Returns the sender's next secrets to use, or the receiver's error.
     fn step<L: SideData, R: SideData>(
@@ -4385,9 +4382,9 @@ mod test_quic {
 
 #[test]
 fn test_client_does_not_offer_sha1() {
-    use rustls::internal::msgs::{
-        codec::Reader, handshake::HandshakePayload, message::MessagePayload, message::OpaqueMessage,
-    };
+    use rustls::internal::msgs::codec::Reader;
+    use rustls::internal::msgs::handshake::HandshakePayload;
+    use rustls::internal::msgs::message::{MessagePayload, OpaqueMessage};
     use rustls::HandshakeType;
 
     for kt in ALL_KEY_TYPES.iter() {

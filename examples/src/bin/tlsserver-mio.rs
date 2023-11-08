@@ -7,10 +7,9 @@ use docopt::Docopt;
 use log::{debug, error};
 use mio::net::{TcpListener, TcpStream};
 use pki_types::{CertificateDer, CertificateRevocationListDer, PrivateKeyDer};
-use serde::Deserialize;
-
 use rustls::server::WebPkiClientVerifier;
 use rustls::{self, RootCertStore};
+use serde::Deserialize;
 
 // Token for our listening socket.
 const LISTENER: mio::Token = mio::Token(0);

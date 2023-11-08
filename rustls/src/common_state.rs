@@ -1,3 +1,8 @@
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+
+use pki_types::CertificateDer;
+
 use crate::enums::{AlertDescription, ContentType, HandshakeType, ProtocolVersion};
 use crate::error::{Error, InvalidMessage, PeerMisbehaved};
 #[cfg(feature = "logging")]
@@ -12,16 +17,10 @@ use crate::msgs::message::{BorrowedPlainMessage, Message, OpaqueMessage, PlainMe
 #[cfg(feature = "quic")]
 use crate::quic;
 use crate::record_layer;
-use crate::suites::PartiallyExtractedSecrets;
-use crate::suites::SupportedCipherSuite;
+use crate::suites::{PartiallyExtractedSecrets, SupportedCipherSuite};
 #[cfg(feature = "tls12")]
 use crate::tls12::ConnectionSecrets;
 use crate::vecbuf::ChunkVecBuffer;
-
-use alloc::boxed::Box;
-use alloc::vec::Vec;
-
-use pki_types::CertificateDer;
 
 /// Connection state common to both client and server connections.
 pub struct CommonState {

@@ -49,9 +49,10 @@ pub mod transport {
     //! but that doesn't matter (we are measuring performance differences, and overhead is automatically
     //! ignored as long as it remains constant).
 
+    use std::io::{Read, Write};
+
     use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
     use rustls::{ClientConnection, ConnectionCommon, ServerConnection, SideData};
-    use std::io::{Read, Write};
 
     /// Sends one side's handshake data to the other side in one go.
     ///

@@ -1,20 +1,18 @@
-use crate::builder::{ConfigBuilder, WantsVerifier};
-use crate::crypto::{CryptoProvider, SupportedKxGroup};
-#[cfg(feature = "ring")]
-use crate::error::Error;
-use crate::server::handy;
-use crate::server::{ResolvesServerCert, ServerConfig};
-use crate::suites::SupportedCipherSuite;
-use crate::verify::{ClientCertVerifier, NoClientAuth};
-use crate::versions;
-use crate::NoKeyLog;
+use alloc::sync::Arc;
+use alloc::vec::Vec;
+use core::marker::PhantomData;
 
 #[cfg(feature = "ring")]
 use pki_types::{CertificateDer, PrivateKeyDer};
 
-use alloc::sync::Arc;
-use alloc::vec::Vec;
-use core::marker::PhantomData;
+use crate::builder::{ConfigBuilder, WantsVerifier};
+use crate::crypto::{CryptoProvider, SupportedKxGroup};
+#[cfg(feature = "ring")]
+use crate::error::Error;
+use crate::server::{handy, ResolvesServerCert, ServerConfig};
+use crate::suites::SupportedCipherSuite;
+use crate::verify::{ClientCertVerifier, NoClientAuth};
+use crate::{versions, NoKeyLog};
 
 impl ConfigBuilder<ServerConfig, WantsVerifier> {
     /// Choose how to verify client certificates.

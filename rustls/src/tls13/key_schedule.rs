@@ -1,3 +1,6 @@
+use alloc::boxed::Box;
+use alloc::string::ToString;
+
 use crate::common_state::{CommonState, Side};
 use crate::crypto::cipher::{AeadKey, Iv, MessageDecrypter};
 use crate::crypto::tls13::{expand, Hkdf, HkdfExpander, OkmBlock, OutputLengthError};
@@ -7,9 +10,6 @@ use crate::error::Error;
 use crate::quic;
 use crate::suites::PartiallyExtractedSecrets;
 use crate::{KeyLog, Tls13CipherSuite};
-
-use alloc::boxed::Box;
-use alloc::string::ToString;
 
 /// Key schedule maintenance for TLS1.3
 
@@ -832,12 +832,13 @@ where
 
 #[cfg(all(test, feature = "ring"))]
 mod tests {
+    use ring::aead;
+
     use super::{derive_traffic_iv, derive_traffic_key, KeySchedule, SecretKind};
     use crate::crypto::ring::tls13::{
         TLS13_AES_128_GCM_SHA256_INTERNAL, TLS13_CHACHA20_POLY1305_SHA256_INTERNAL,
     };
     use crate::KeyLog;
-    use ring::aead;
 
     #[test]
     fn test_vectors() {
@@ -1014,10 +1015,11 @@ mod benchmarks {
     #[cfg(feature = "ring")]
     #[bench]
     fn bench_sha256(b: &mut test::Bencher) {
+        use ring::aead;
+
         use super::{derive_traffic_iv, derive_traffic_key, KeySchedule, SecretKind};
         use crate::crypto::ring::tls13::TLS13_CHACHA20_POLY1305_SHA256_INTERNAL;
         use crate::KeyLog;
-        use ring::aead;
 
         fn extract_traffic_secret(ks: &KeySchedule, kind: SecretKind) {
             struct Log;

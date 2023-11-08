@@ -6,9 +6,8 @@ use std::{fs, process, str};
 use docopt::Docopt;
 use mio::net::TcpStream;
 use pki_types::{CertificateDer, PrivateKeyDer};
-use serde::Deserialize;
-
 use rustls::RootCertStore;
+use serde::Deserialize;
 
 const CLIENT: mio::Token = mio::Token(0);
 

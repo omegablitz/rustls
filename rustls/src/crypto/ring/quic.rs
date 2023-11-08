@@ -1,13 +1,13 @@
+use alloc::boxed::Box;
+
+use ring::aead;
+
 use crate::crypto::cipher::{Iv, Nonce};
 use crate::crypto::tls13;
 use crate::error::Error;
 use crate::quic;
 use crate::tls13::key_schedule::{hkdf_expand_label, hkdf_expand_label_aead_key};
 use crate::tls13::Tls13CipherSuite;
-
-use alloc::boxed::Box;
-
-use ring::aead;
 
 pub(crate) struct HeaderProtectionKey(aead::quic::HeaderProtectionKey);
 
@@ -235,9 +235,7 @@ mod tests {
         TLS13_AES_128_GCM_SHA256_INTERNAL, TLS13_CHACHA20_POLY1305_SHA256_INTERNAL,
     };
     use crate::crypto::tls13::OkmBlock;
-    use crate::quic::HeaderProtectionKey;
-    use crate::quic::PacketKey;
-    use crate::quic::*;
+    use crate::quic::{HeaderProtectionKey, PacketKey, *};
 
     fn test_short_packet(version: Version, expected: &[u8]) {
         const PN: u64 = 654360564;

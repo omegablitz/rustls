@@ -1,3 +1,5 @@
+use pki_types::CertificateDer;
+
 use crate::dns_name::DnsNameRef;
 use crate::enums::{CipherSuite, HandshakeType, ProtocolVersion, SignatureScheme};
 use crate::msgs::base::{Payload, PayloadU16, PayloadU24, PayloadU8};
@@ -18,8 +20,6 @@ use crate::msgs::handshake::{
     ServerExtension, ServerHelloPayload, ServerKeyExchangePayload, SessionId, UnknownExtension,
 };
 use crate::verify::DigitallySignedStruct;
-
-use pki_types::CertificateDer;
 
 #[test]
 fn rejects_short_random() {

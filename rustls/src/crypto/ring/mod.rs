@@ -1,8 +1,8 @@
+use ring::rand::{SecureRandom, SystemRandom};
+
 use crate::crypto::{CryptoProvider, SupportedKxGroup};
 use crate::rand::GetRandomFailed;
 use crate::suites::SupportedCipherSuite;
-
-use ring::rand::{SecureRandom, SystemRandom};
 
 pub(crate) mod hash;
 pub(crate) mod hmac;
@@ -74,9 +74,7 @@ pub static ALL_CIPHER_SUITES: &[SupportedCipherSuite] = &[
 ///
 /// [`ALL_KX_GROUPS`] is provided as an array of all of these values.
 pub mod kx_group {
-    pub use super::kx::SECP256R1;
-    pub use super::kx::SECP384R1;
-    pub use super::kx::X25519;
+    pub use super::kx::{SECP256R1, SECP384R1, X25519};
 }
 
 pub use kx::ALL_KX_GROUPS;

@@ -1,21 +1,17 @@
-use crate::client;
-use crate::enums::SignatureScheme;
-use crate::limited_cache;
-use crate::msgs::persist;
-use crate::sign;
-use crate::NamedGroup;
-use crate::ServerName;
-#[cfg(feature = "ring")]
-use crate::{crypto::ring, error::Error};
-
-#[cfg(feature = "ring")]
-use pki_types::{CertificateDer, PrivateKeyDer};
-
 use alloc::collections::VecDeque;
 use alloc::sync::Arc;
 #[cfg(feature = "ring")]
 use alloc::vec::Vec;
 use std::sync::Mutex;
+
+#[cfg(feature = "ring")]
+use pki_types::{CertificateDer, PrivateKeyDer};
+
+use crate::enums::SignatureScheme;
+use crate::msgs::persist;
+use crate::{client, limited_cache, sign, NamedGroup, ServerName};
+#[cfg(feature = "ring")]
+use crate::{crypto::ring, error::Error};
 
 /// An implementer of `ClientSessionStore` which does nothing.
 pub(super) struct NoClientSessionStorage;
@@ -209,6 +205,10 @@ impl client::ResolvesClientCert for AlwaysResolvesClientCert {
 
 #[cfg(all(test, feature = "ring"))]
 mod tests {
+    use core::convert::TryInto;
+
+    use pki_types::UnixTime;
+
     use super::NoClientSessionStorage;
     use crate::client::ClientSessionStore;
     use crate::msgs::enums::NamedGroup;
@@ -216,10 +216,6 @@ mod tests {
     use crate::msgs::handshake::SessionId;
     use crate::msgs::persist::Tls13ClientSessionValue;
     use crate::suites::SupportedCipherSuite;
-
-    use pki_types::UnixTime;
-
-    use core::convert::TryInto;
 
     #[test]
     fn test_noclientsessionstorage_does_nothing() {

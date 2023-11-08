@@ -1,9 +1,9 @@
 //! The single place where we generate random material for our own use.
 
-use crate::crypto::CryptoProvider;
-
 use alloc::vec;
 use alloc::vec::Vec;
+
+use crate::crypto::CryptoProvider;
 
 /// Make a [`Vec<u8>`] of the given size containing random material.
 pub(crate) fn random_vec(

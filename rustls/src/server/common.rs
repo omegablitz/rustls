@@ -1,6 +1,6 @@
-use crate::sign;
-
 use pki_types::CertificateDer;
+
+use crate::sign;
 
 /// ActiveCertifiedKey wraps CertifiedKey and tracks OSCP and SCT state
 /// in a single handshake.

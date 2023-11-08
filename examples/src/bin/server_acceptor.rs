@@ -14,10 +14,9 @@ use std::{fs, thread};
 
 use docopt::Docopt;
 use pki_types::{CertificateDer, CertificateRevocationListDer, PrivateKeyDer, PrivatePkcs8KeyDer};
-use serde_derive::Deserialize;
-
 use rustls::server::{Acceptor, ClientHello, ServerConfig, WebPkiClientVerifier};
 use rustls::RootCertStore;
+use serde_derive::Deserialize;
 
 fn main() {
     let version = concat!(

@@ -1,22 +1,19 @@
-#[cfg(feature = "ring")]
-use crate::crypto::ring;
-use crate::dns_name::DnsNameRef;
-use crate::error::Error;
-use crate::limited_cache;
-use crate::server;
-use crate::server::ClientHello;
-use crate::sign;
-use crate::webpki::{verify_server_name, ParsedCertificate};
-use crate::ServerName;
-
-#[cfg(feature = "ring")]
-use pki_types::{CertificateDer, PrivateKeyDer};
-
 use alloc::string::{String, ToString};
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 use std::collections;
 use std::sync::Mutex;
+
+#[cfg(feature = "ring")]
+use pki_types::{CertificateDer, PrivateKeyDer};
+
+#[cfg(feature = "ring")]
+use crate::crypto::ring;
+use crate::dns_name::DnsNameRef;
+use crate::error::Error;
+use crate::server::ClientHello;
+use crate::webpki::{verify_server_name, ParsedCertificate};
+use crate::{limited_cache, server, sign, ServerName};
 
 /// Something which never stores sessions.
 pub struct NoServerSessionStorage {}
@@ -205,9 +202,7 @@ impl server::ResolvesServerCert for ResolvesServerCertUsingSni {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::server::ProducesTickets;
-    use crate::server::ResolvesServerCert;
-    use crate::server::StoresServerSessions;
+    use crate::server::{ProducesTickets, ResolvesServerCert, StoresServerSessions};
 
     #[test]
     fn test_noserversessionstorage_drops_put() {

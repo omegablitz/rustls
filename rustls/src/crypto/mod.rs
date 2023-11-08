@@ -1,11 +1,10 @@
-use crate::suites;
-use crate::{Error, NamedGroup};
-
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 use core::fmt::Debug;
 
 use zeroize::Zeroize;
+
+use crate::{suites, Error, NamedGroup};
 
 /// *ring* based CryptoProvider.
 #[cfg(feature = "ring")]
@@ -29,9 +28,8 @@ pub mod tls12;
 /// Cryptography specific to TLS1.3.
 pub mod tls13;
 
-pub use crate::rand::GetRandomFailed;
-
 pub use crate::msgs::handshake::KeyExchangeAlgorithm;
+pub use crate::rand::GetRandomFailed;
 
 /// Pluggable crypto galore.
 pub trait CryptoProvider: Send + Sync + Debug + 'static {

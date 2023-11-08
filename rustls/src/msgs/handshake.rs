@@ -1,5 +1,14 @@
 #![allow(non_camel_case_types)]
 
+use alloc::collections::BTreeSet;
+#[cfg(feature = "logging")]
+use alloc::string::String;
+use alloc::vec;
+use alloc::vec::Vec;
+use core::fmt;
+
+use pki_types::CertificateDer;
+
 #[cfg(feature = "tls12")]
 use crate::crypto::ActiveKeyExchange;
 use crate::crypto::CryptoProvider;
@@ -18,15 +27,6 @@ use crate::msgs::enums::{
 use crate::rand;
 use crate::verify::DigitallySignedStruct;
 use crate::x509::wrap_in_sequence;
-
-use pki_types::CertificateDer;
-
-use alloc::collections::BTreeSet;
-#[cfg(feature = "logging")]
-use alloc::string::String;
-use alloc::vec;
-use alloc::vec::Vec;
-use core::fmt;
 
 /// Create a newtype wrapper around a given type.
 ///

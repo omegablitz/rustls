@@ -388,13 +388,13 @@ pub(crate) enum AnonymousClientPolicy {
 
 #[cfg(all(test, feature = "ring"))]
 mod tests {
-    use super::WebPkiClientVerifier;
-    use crate::server::VerifierBuilderError;
-    use crate::RootCertStore;
+    use std::sync::Arc;
 
     use pki_types::{CertificateDer, CertificateRevocationListDer};
 
-    use std::sync::Arc;
+    use super::WebPkiClientVerifier;
+    use crate::server::VerifierBuilderError;
+    use crate::RootCertStore;
 
     fn load_crls(crls_der: &[&[u8]]) -> Vec<CertificateRevocationListDer<'static>> {
         crls_der

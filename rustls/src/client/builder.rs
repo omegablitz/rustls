@@ -1,22 +1,20 @@
+use alloc::sync::Arc;
+use alloc::vec::Vec;
+#[cfg(any(feature = "dangerous_configuration", feature = "ring"))]
+use core::marker::PhantomData;
+
+#[cfg(feature = "ring")]
+use pki_types::{CertificateDer, PrivateKeyDer};
+
+use super::client_conn::Resumption;
 use crate::builder::{ConfigBuilder, WantsVerifier};
-use crate::client::handy;
-use crate::client::{ClientConfig, ResolvesClientCert};
+use crate::client::{handy, ClientConfig, ResolvesClientCert};
 use crate::crypto::{CryptoProvider, SupportedKxGroup};
 use crate::key_log::NoKeyLog;
 use crate::suites::SupportedCipherSuite;
 #[cfg(feature = "ring")]
 use crate::{error::Error, webpki};
 use crate::{verify, versions};
-
-use super::client_conn::Resumption;
-
-#[cfg(feature = "ring")]
-use pki_types::{CertificateDer, PrivateKeyDer};
-
-use alloc::sync::Arc;
-use alloc::vec::Vec;
-#[cfg(any(feature = "dangerous_configuration", feature = "ring"))]
-use core::marker::PhantomData;
 
 impl ConfigBuilder<ClientConfig, WantsVerifier> {
     #[cfg(feature = "ring")]

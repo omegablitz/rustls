@@ -1,13 +1,13 @@
-use crate::crypto::{ActiveKeyExchange, SharedSecret, SupportedKxGroup};
-use crate::error::{Error, PeerMisbehaved};
-use crate::msgs::enums::NamedGroup;
-use crate::rand::GetRandomFailed;
+use alloc::boxed::Box;
+use core::fmt;
 
 use ring::agreement::{agree_ephemeral, EphemeralPrivateKey, UnparsedPublicKey};
 use ring::rand::SystemRandom;
 
-use alloc::boxed::Box;
-use core::fmt;
+use crate::crypto::{ActiveKeyExchange, SharedSecret, SupportedKxGroup};
+use crate::error::{Error, PeerMisbehaved};
+use crate::msgs::enums::NamedGroup;
+use crate::rand::GetRandomFailed;
 
 /// A key-exchange group supported by *ring*.
 ///

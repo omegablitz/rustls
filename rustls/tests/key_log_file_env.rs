@@ -26,14 +26,13 @@
 #[allow(dead_code)]
 mod common;
 
+use std::env;
+use std::io::Write;
+use std::sync::{Arc, Mutex, Once};
+
 use crate::common::{
     do_handshake, make_client_config_with_versions, make_pair_for_arc_configs, make_server_config,
     transfer, KeyType,
-};
-use std::{
-    env,
-    io::Write,
-    sync::{Arc, Mutex, Once},
 };
 
 /// Approximates `#[serial]` from the `serial_test` crate.

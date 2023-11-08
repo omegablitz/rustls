@@ -1,3 +1,11 @@
+use alloc::boxed::Box;
+use alloc::collections::VecDeque;
+use alloc::sync::Arc;
+use alloc::vec;
+use alloc::vec::Vec;
+use core::fmt::{self, Debug};
+use core::ops::{Deref, DerefMut};
+
 /// This module contains optional APIs for implementing QUIC TLS.
 use crate::client::{ClientConfig, ClientConnectionData, ServerName};
 use crate::common_state::{CommonState, Protocol, Side};
@@ -9,14 +17,6 @@ use crate::msgs::handshake::{ClientExtension, ServerExtension};
 use crate::server::{ServerConfig, ServerConnectionData};
 use crate::tls13::key_schedule::hkdf_expand_label_block;
 use crate::tls13::Tls13CipherSuite;
-
-use alloc::boxed::Box;
-use alloc::collections::VecDeque;
-use alloc::sync::Arc;
-use alloc::vec;
-use alloc::vec::Vec;
-use core::fmt::{self, Debug};
-use core::ops::{Deref, DerefMut};
 
 /// A QUIC client or server connection.
 #[derive(Debug)]
