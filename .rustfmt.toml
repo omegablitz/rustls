@@ -1,1 +1,3 @@
 chain_width=40
+group_imports="StdExternalCrate"
+imports_granularity="Module"
