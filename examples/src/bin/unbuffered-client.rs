@@ -31,12 +31,8 @@ const OUTGOING_TLS_INITIAL_BUFSIZ: usize = KB;
 const MAX_ITERATIONS: usize = 20;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let config = ClientConfig::builder()
-        .with_safe_default_cipher_suites()
-        .with_safe_default_kx_groups()
-        // .with_protocol_versions(&[&TLS12])
-        .with_protocol_versions(&[&TLS13])
-        .unwrap()
+    //let config = ClientConfig::builder_with_protocol_versions(&[&TLS12])
+    let config = ClientConfig::builder_with_protocol_versions(&[&TLS13])
         .with_root_certificates(build_root_store()?)
         .with_no_client_auth();
 
