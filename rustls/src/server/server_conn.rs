@@ -598,6 +598,12 @@ impl UnbufferedServerConnection {
     }
 }
 
+impl UnbufferedConnectionCommon<ServerConnectionData> {
+    pub(crate) fn pop_early_data(&mut self) -> Option<Vec<u8>> {
+        self.core.data.early_data.pop()
+    }
+}
+
 /// Handle a server-side connection before configuration is available.
 ///
 /// `Acceptor` allows the caller to choose a [`ServerConfig`] after reading
@@ -816,6 +822,13 @@ impl EarlyDataState {
 
     pub(super) fn was_rejected(&self) -> bool {
         matches!(self, Self::Rejected)
+    }
+
+    fn pop(&mut self) -> Option<Vec<u8>> {
+        match self {
+            Self::Accepted(ref mut received) => received.pop(),
+            _ => None,
+        }
     }
 
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
