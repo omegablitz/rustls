@@ -245,7 +245,7 @@ impl MessageDeframer {
         payload: &[u8],
         end: usize,
         quic: bool,
-        buffer: &mut DeframerVecBuffer,
+        buffer: &mut impl DeframerBuffer,
     ) -> Result<HandshakePayloadState, Error> {
         let meta = match &mut self.joining_hs {
             Some(meta) => {
@@ -367,25 +367,6 @@ impl DeframerVecBuffer {
         Ok(())
     }
 
-    /// Copies from the `src` buffer into this buffer at the requested index
-    ///
-    /// If `quic` is true the data will be copied into the *un*filled section of the buffer
-    ///
-    /// If `quic` is false the data will be copied into the filled section of the buffer
-    fn copy(&mut self, from: &[u8], at: usize, quic: bool) {
-        let buf = if quic {
-            self.unfilled()
-        } else {
-            self.filled_mut()
-        };
-        let len = from.len();
-        let into = &mut buf[at..at + len];
-        into.copy_from_slice(from);
-        if quic {
-            self.advance(len);
-        }
-    }
-
     /// Discard `taken` bytes from the start of our buffer.
     fn discard(&mut self, taken: usize) {
         #[allow(clippy::comparison_chain)]
@@ -411,8 +392,54 @@ impl DeframerVecBuffer {
         }
     }
 
-    fn advance(&mut self, new_bytes: usize) {
-        self.used += new_bytes;
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+trait DeframerBuffer {
+    /// Copies from the `src` buffer into this buffer at the requested index
+    ///
+    /// If `quic` is true the data will be copied into the *un*filled section of the buffer
+    ///
+    /// If `quic` is false the data will be copied into the filled section of the buffer
+    fn copy(&mut self, src: &[u8], at: usize, quic: bool) {
+        let buf = if quic {
+            self.unfilled()
+        } else {
+            self.filled_mut()
+        };
+        let len = src.len();
+        let into = &mut buf[at..at + len];
+        into.copy_from_slice(src);
+        if quic {
+            self.advance(len);
+        }
+    }
+
+    fn advance(&mut self, num_bytes: usize);
+
+    fn filled_mut(&mut self) -> &mut [u8];
+
+    fn unfilled(&mut self) -> &mut [u8];
+
+    fn filled_get<I>(&self, index: I) -> &I::Output
+    where
+        I: SliceIndex<[u8]>,
+    {
+        self.filled().get(index).unwrap()
+    }
+
+    fn len(&self) -> usize {
+        self.filled().len()
+    }
+
+    fn filled(&self) -> &[u8];
+}
+
+impl DeframerBuffer for DeframerVecBuffer {
+    fn advance(&mut self, num_bytes: usize) {
+        self.used += num_bytes;
     }
 
     fn filled_mut(&mut self) -> &mut [u8] {
@@ -423,23 +450,8 @@ impl DeframerVecBuffer {
         &mut self.buf[self.used..]
     }
 
-    fn filled_get<I>(&self, index: I) -> &I::Output
-    where
-        I: SliceIndex<[u8]>,
-    {
-        self.filled().get(index).unwrap()
-    }
-
     fn filled(&self) -> &[u8] {
         &self.buf[..self.used]
-    }
-
-    fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    fn len(&self) -> usize {
-        self.used
     }
 }
 
