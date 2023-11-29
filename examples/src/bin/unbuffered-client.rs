@@ -1,18 +1,20 @@
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufReader, Read, Write};
+use std::io::BufReader;
 use std::net::TcpStream;
 use std::sync::Arc;
 
+use helpers::KB;
 use rustls::client::{ClientConnectionData, UnbufferedClientConnection};
 use rustls::unbuffered::{
-    AppDataRecord, ConnectionState, EncodeError, EncryptError, InsufficientSizeError,
-    MayEncryptAppData, UnbufferedStatus,
+    AppDataRecord, ConnectionState, EncodeError, EncryptError, MayEncryptAppData, UnbufferedStatus,
 };
 #[allow(unused_imports)]
 use rustls::version::{TLS12, TLS13};
 use rustls::{ClientConfig, RootCertStore};
+use rustls_examples as helpers;
 
+/* example configuration */
 // remote server
 const CERTFILE: Option<&str> = None;
 const SERVER_NAME: &str = "example.com";
@@ -23,7 +25,6 @@ const PORT: u16 = 443;
 // const SERVER_NAME: &str = "localhost";
 // const PORT: u16 = 1443;
 
-const KB: usize = 1024;
 const INCOMING_TLS_BUFSIZ: usize = 16 * KB;
 const OUTGOING_TLS_INITIAL_BUFSIZ: usize = KB;
 
@@ -97,7 +98,7 @@ fn converse(
             }
 
             ConnectionState::MustEncodeTlsData(mut state) => {
-                try_or_resize_and_retry(
+                helpers::try_or_resize_and_retry(
                     |out_buffer| state.encode(out_buffer),
                     |e| {
                         if let EncodeError::InsufficientSize(is) = &e {
@@ -121,12 +122,12 @@ fn converse(
                     );
                 }
 
-                send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
+                helpers::send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
                 state.done();
             }
 
             ConnectionState::NeedsMoreTlsData { .. } => {
-                recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
+                helpers::recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
             }
 
             ConnectionState::TrafficTransit(mut may_encrypt) => {
@@ -136,15 +137,15 @@ fn converse(
                     outgoing_tls,
                     &mut outgoing_used,
                 ) {
-                    send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
-                    recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
+                    helpers::send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
+                    helpers::recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
                 } else if !received_response {
                     // this happens in the TLS 1.3 case. the app-data was sent in the preceding
                     // `MustTransmitTlsData` state. the server should have already a response which
                     // we can read out from the socket
-                    recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
+                    helpers::recv_tls(&mut sock, incoming_tls, &mut incoming_used)?;
                 } else {
-                    try_or_resize_and_retry(
+                    helpers::try_or_resize_and_retry(
                         |out_buffer| may_encrypt.queue_close_notify(out_buffer),
                         |e| {
                             if let EncryptError::InsufficientSize(is) = &e {
@@ -156,7 +157,7 @@ fn converse(
                         outgoing_tls,
                         &mut outgoing_used,
                     )?;
-                    send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
+                    helpers::send_tls(&mut sock, outgoing_tls, &mut outgoing_used)?;
                     open_connection = false;
                 }
             }
@@ -191,55 +192,6 @@ fn converse(
     assert_eq!(0, incoming_used);
     assert_eq!(0, outgoing_used);
 
-    Ok(())
-}
-
-fn try_or_resize_and_retry<E>(
-    mut f: impl FnMut(&mut [u8]) -> Result<usize, E>,
-    map_err: impl FnOnce(E) -> Result<InsufficientSizeError, Box<dyn Error>>,
-    outgoing_tls: &mut Vec<u8>,
-    outgoing_used: &mut usize,
-) -> Result<usize, Box<dyn Error>>
-where
-    E: Error + 'static,
-{
-    let written = match f(&mut outgoing_tls[*outgoing_used..]) {
-        Ok(written) => written,
-
-        Err(e) => {
-            let InsufficientSizeError { required_size } = map_err(e)?;
-            let new_len = *outgoing_used + required_size;
-            outgoing_tls.resize(new_len, 0);
-            eprintln!("resized `outgoing_tls` buffer to {new_len}B");
-
-            f(&mut outgoing_tls[*outgoing_used..])?
-        }
-    };
-
-    *outgoing_used += written;
-
-    Ok(written)
-}
-
-fn recv_tls(
-    sock: &mut TcpStream,
-    incoming_tls: &mut [u8],
-    incoming_used: &mut usize,
-) -> Result<(), Box<dyn Error>> {
-    let read = sock.read(&mut incoming_tls[*incoming_used..])?;
-    eprintln!("received {read}B of data");
-    *incoming_used += read;
-    Ok(())
-}
-
-fn send_tls(
-    sock: &mut TcpStream,
-    outgoing_tls: &[u8],
-    outgoing_used: &mut usize,
-) -> Result<(), Box<dyn Error>> {
-    sock.write_all(&outgoing_tls[..*outgoing_used])?;
-    eprintln!("sent {outgoing_used}B of data");
-    *outgoing_used = 0;
     Ok(())
 }
 
