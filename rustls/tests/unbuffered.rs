@@ -15,9 +15,89 @@ mod common;
 
 const MAX_ITERATIONS: usize = 100;
 
+const CLIENT_TRANSCRIPT_TLS13: &[&str] = &[
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "TrafficTransit",
+    "TrafficTransit",
+    "TrafficTransit",
+    "TrafficTransit",
+    "TrafficTransit",
+];
+
+const SERVER_TRANSCRIPT_TLS13: &[&str] = &[
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "TrafficTransit",
+];
+
+const CLIENT_TRANSCRIPT_TLS12: &[&str] = &[
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "TrafficTransit",
+];
+
+const SERVER_TRANSCRIPT_TLS12: &[&str] = &[
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "NeedsMoreTlsData",
+    "EncodedTlsData",
+    "EncodedTlsData",
+    "MustTransmitTlsData",
+    "TrafficTransit",
+];
+
+const TRANSCRIPTS: &[(&[&str], &[&str])] = &[
+    (CLIENT_TRANSCRIPT_TLS13, SERVER_TRANSCRIPT_TLS13),
+    (CLIENT_TRANSCRIPT_TLS12, SERVER_TRANSCRIPT_TLS12),
+];
+
 #[test]
 fn handshake() {
-    for version in rustls::ALL_VERSIONS {
+    for (version, transcripts) in rustls::ALL_VERSIONS
+        .iter()
+        .zip(TRANSCRIPTS)
+    {
+        let &(expected_client_transcript, expected_server_transcript) = transcripts;
+        let mut client_transcript = Vec::<String>::new();
+        let mut server_transcript = Vec::<String>::new();
+
         let (mut client, mut server) = make_connection_pair(version);
         let mut buffers = BothBuffers::default();
 
@@ -25,7 +105,16 @@ fn handshake() {
         let mut client_handshake_done = false;
         let mut server_handshake_done = false;
         while !client_handshake_done || !server_handshake_done {
-            match advance_client(&mut client, &mut buffers.client, NO_ACTIONS) {
+            let client_state = advance_client(&mut client, &mut buffers.client, NO_ACTIONS);
+            client_transcript.push(
+                format!("{:?}", client_state)
+                    .split(' ')
+                    .next()
+                    .unwrap()
+                    .to_owned(),
+            );
+
+            match client_state {
                 State::EncodedTlsData => {}
                 State::MustTransmitTlsData {
                     sent_app_data: false,
@@ -40,7 +129,16 @@ fn handshake() {
                 state => unreachable!("{state:?}"),
             }
 
-            match advance_server(&mut server, &mut buffers.server, NO_ACTIONS) {
+            let server_state = advance_server(&mut server, &mut buffers.server, NO_ACTIONS);
+            server_transcript.push(
+                format!("{:?}", server_state)
+                    .split(' ')
+                    .next()
+                    .unwrap()
+                    .to_owned(),
+            );
+
+            match server_state {
                 State::EncodedTlsData => {}
                 State::MustTransmitTlsData {
                     sent_app_data: false,
@@ -62,6 +160,15 @@ fn handshake() {
                 "handshake {version:?} was not completed"
             );
         }
+
+        assert_eq!(
+            client_transcript, expected_client_transcript,
+            "{version:?} client transcript mismatch"
+        );
+        assert_eq!(
+            server_transcript, expected_server_transcript,
+            "{version:?} server transcript mismatch"
+        );
     }
 }
 
