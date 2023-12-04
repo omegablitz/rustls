@@ -20,10 +20,10 @@ fuzz_target!(|data: &[u8]| {
     buf.has_pending();
 
     let mut rl = RecordLayer::new();
-    let mut borrowed_buf = buf.borrow();
+    let mut to_discard = 0;
+    let mut borrowed_buf = buf.borrow(&mut to_discard);
     while let Ok(Some(decrypted)) = dfm.pop(&mut rl, None, &mut borrowed_buf) {
         Message::try_from(decrypted.message).ok();
     }
-    let discard = borrowed_buf.pending_discard();
-    buf.discard(discard);
+    buf.discard(to_discard);
 });

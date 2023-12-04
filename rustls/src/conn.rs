@@ -452,10 +452,13 @@ impl<Data> ConnectionCommon<Data> {
     /// This is a shortcut to the `process_new_packets()` -> `process_msg()` ->
     /// `process_handshake_messages()` path, specialized for the first handshake message.
     pub(crate) fn first_handshake_message(&mut self) -> Result<Option<Message>, Error> {
-        let mut deframer_buffer = self.deframer_buffer.borrow();
-        let res = self.core.deframe(&mut deframer_buffer);
-        let discard = deframer_buffer.pending_discard();
-        self.deframer_buffer.discard(discard);
+        let mut to_discard = 0;
+        let res = self.core.deframe(
+            &mut self
+                .deframer_buffer
+                .borrow(&mut to_discard),
+        );
+        self.deframer_buffer.discard(to_discard);
 
         match res?.map(Message::try_from) {
             Some(Ok(msg)) => Ok(Some(msg)),
@@ -647,21 +650,19 @@ impl<Data> ConnectionCore<Data> {
             }
         };
 
-        let mut borrowed_buffer = deframer_buffer.borrow();
-        while let Some(msg) = self.deframe(&mut borrowed_buffer)? {
+        let mut to_discard = 0;
+        while let Some(msg) = self.deframe(&mut deframer_buffer.borrow(&mut to_discard))? {
             match self.process_msg(msg, state) {
                 Ok(new) => state = new,
                 Err(e) => {
                     self.state = Err(e.clone());
-                    let discard = borrowed_buffer.pending_discard();
-                    deframer_buffer.discard(discard);
+                    deframer_buffer.discard(to_discard);
                     return Err(e);
                 }
             }
         }
 
-        let discard = borrowed_buffer.pending_discard();
-        deframer_buffer.discard(discard);
+        deframer_buffer.discard(to_discard);
         self.state = Ok(state);
         Ok(self.common_state.current_io_state())
     }
